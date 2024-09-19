@@ -1,0 +1,55 @@
+import numpy as np
+
+
+class traindata(object):
+    def __init__(self,x,y):
+        self.X = x
+        self.Y = y
+
+
+def DualPer(traindata,eta):
+    X = traindata.X
+    Y = traindata.Y
+    (num,dim) = X.shape
+    G = np.zeros((num,num),dtype=np.int64)
+    for i in range(num):
+        for k in range(num):
+            G[i][k] = np.dot(X[i],X[k])
+    b = 0
+    alpha = [0 for i in range(num)]
+    while True:
+        Sall = [0 for i in range(num)]
+        for count in range(num):
+            S = 0
+            for j in range(num):
+                S += alpha[j]*Y[j]*G[j][count]
+            S += b
+            S = S*Y[count]
+            Sall[count] = S
+            if S <= 0 :
+                alpha[count] = alpha[count] + eta
+                b = b + eta*Y[count]
+        else:
+            if (np.array(Sall) > 0).all():
+                break
+    wi = 0
+    for i in range(num):
+        wi += alpha[i]*Y[i]*X[i]
+    wi = tuple(wi)
+    return wi,b
+
+
+if __name__ == '__main__':
+    eta = 1
+    X = np.array([[3, 3], [4, 3], [1, 1]])
+    Y = np.array([1, 1, -1])
+    tradata = traindata(X,Y)    
+    wi,b = DualPer(tradata,eta)
+    print('wi:',wi)
+    print('b:',b)
+
+
+
+        
+
+
